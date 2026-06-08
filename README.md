@@ -72,7 +72,8 @@ php artisan migrate
 
 ### Configurando o modelo User
 
-No arquivo **app/Models/User.php**, adicionar o trait *HasApiTokens*
+- No arquivo **app/Models/User.php**, adicionar o trait *HasApiTokens*
+- Preencher *Fillable*
 
 ### Controller de autenticação
 
@@ -93,8 +94,59 @@ web: __DIR__.'/../routes/web.php',
 api: __DIR__.'/../routes/api.php', (acrescentar essa linha)
 ```
 
+### Criando Requests
+
+```
+php artisan make:request RegisterRequest
+```
+Em *app/Http/Requests/RegisterRequest.php*:
+- método *authorize()*, retornar **true**
+- Preencher método *rules()* (Scramble lê esse método e gera o schema do body automaticamente)
+
+Em *Api/AuthController.php*:
+```
+public function register(RegisterRequest $request) {
+  $validated = $request->validated();
+  ...
+}
+```
+
+Repetir o passo anterior para criar o LoginRequest
+
+### Scramble (Swagger/OpenAPI)
+Instalação
+```
+composer require dedoc/scramble
+```
+
+Publicar a configuração
+```
+php artisan vendor:publish --provider="Dedoc\Scramble\ScrambleServiceProvider"
+```
+
+#### Configurando Sanctum para Scramble
+
+Ir em *app/Providers/AppServiceProvider.php*, método *boot()*:
+```
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
+
+...
+Scramble::configure()->withDocumentTransformers(function (OpenApi $openApi) {
+  $openApi->secure(
+    SecurityScheme::http('bearer')
+  );
+});
+```
+
+Testando
+```
+http://127.0.0.1:8000/docs/api
+```
+
 ## Testando a API
-Particularmente estou usando Insomnia
+(Particularmente estou usando Insomnia)
 
 Inicie o servidor:
 ```

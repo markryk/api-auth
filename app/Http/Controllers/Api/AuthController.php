@@ -2,6 +2,8 @@
     namespace App\Http\Controllers\Api;
 
     use App\Http\Controllers\Controller;
+    use App\Http\Requests\LoginRequest;
+    use App\Http\Requests\RegisterRequest;
     use App\Models\User;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Hash;
@@ -10,12 +12,8 @@
     class AuthController extends Controller {
         
         //Registrar usuário
-        public function register(Request $request) {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:6'
-            ]);
+        public function register(RegisterRequest $request) {
+            $validated = $request->validated();
 
             $user = User::create([
                 'name' => $validated['name'],
@@ -33,11 +31,8 @@
         }
 
         //Login usuário
-        public function login(Request $request) {
-            $validated = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
+        public function login(LoginRequest $request) {
+            $validated = $request->validated();
 
             $user = User::where('email', $validated['email'])->first();
 
