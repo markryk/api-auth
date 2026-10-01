@@ -33,57 +33,9 @@ php artisan serve
 
 ## Criação do projeto
 
-```
-composer create-project laravel/laravel api-auth
-```
-```
-cd api-auth
-```
-
-Arquivo .env
-```
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=api_auth
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Criar banco
-```
-CREATE DATABASE api_auth;
-```
-
-Instalação do Sanctum
-```
-composer require laravel/sanctum
-```
-
-Publicação dos arquivos:
-```
-php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-```
-
-Execução das migrations
-```
-php artisan migrate
-```
-
 ### Configurando o modelo User
 
-- No arquivo **app/Models/User.php**, adicionar o trait *HasApiTokens*
-- Preencher *Fillable*
-
 ### Controller de autenticação
-
-```
-php artisan make:controller Api/AuthController
-```
-
-Arquivo será criado em *app/Http/Controllers/Api/AuthController.php*
-
-Implementar métodos register(), login(), me() (usuário autenticado) e logout()
 
 ### Rotas da API
 Arquivo: *routes/api.php*
@@ -96,33 +48,7 @@ api: __DIR__.'/../routes/api.php', (acrescentar essa linha)
 
 ### Criando Requests
 
-```
-php artisan make:request RegisterRequest
-```
-Em *app/Http/Requests/RegisterRequest.php*:
-- método *authorize()*, retornar **true**
-- Preencher método *rules()* (Scramble lê esse método e gera o schema do body automaticamente)
-
-Em *Api/AuthController.php*:
-```
-public function register(RegisterRequest $request) {
-  $validated = $request->validated();
-  ...
-}
-```
-
-Repetir o passo anterior para criar o LoginRequest
-
 ### Scramble (Swagger/OpenAPI)
-Instalação
-```
-composer require dedoc/scramble
-```
-
-Publicar a configuração
-```
-php artisan vendor:publish --provider="Dedoc\Scramble\ScrambleServiceProvider"
-```
 
 #### Configurando Sanctum para Scramble
 
