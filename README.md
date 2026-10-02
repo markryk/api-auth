@@ -1,8 +1,8 @@
-# API REST com Registro e Login usando Laravel, Sanctum e Swagger Scramble
+# API REST (Registro e Login usando Laravel, Sanctum e Swagger Scramble)
 
 Tópicos desenvolvidos
 
-- Cadastro de usuários (Register)
+- Cadastro de usuários
 - Login autenticado
 - Logout
 - Proteção de rotas com token
@@ -24,54 +24,30 @@ git clone https://github.com/markryk/api-auth.git
 cd api-auth
 composer install
 ```
-- copia arquivo .env.example e renomeia para .env
-- preenche info do seu banco de dados
+Copia arquivo .env.example e renomeia para .env
+
+Preenche info do seu banco de dados (nesse caso, MySQL)
 ```
 php artisan key:generate
 php artisan serve
 ```
 
-## Criação do projeto
+## Passos para a criação do projeto
 
-### Configurando o modelo User
+- Configurando o modelo User
+- Controller de autenticação
+- Rotas da API
+- Criando Requests
+- Scramble (Swagger/OpenAPI)
 
-### Controller de autenticação
-
-### Rotas da API
-Arquivo: *routes/api.php*
-
-Em *bootstrap/app.php*, dentro de withRouting(), acrescente:
-```
-web: __DIR__.'/../routes/web.php',
-api: __DIR__.'/../routes/api.php', (acrescentar essa linha)
-```
-
-### Criando Requests
-
-### Scramble (Swagger/OpenAPI)
-
-#### Configurando Sanctum para Scramble
-
-Ir em *app/Providers/AppServiceProvider.php*, método *boot()*:
-```
-use Dedoc\Scramble\Scramble;
-use Dedoc\Scramble\Support\Generator\OpenApi;
-use Dedoc\Scramble\Support\Generator\SecurityScheme;
-
-...
-Scramble::configure()->withDocumentTransformers(function (OpenApi $openApi) {
-  $openApi->secure(
-    SecurityScheme::http('bearer')
-  );
-});
-```
-
-Testando
+### Scramble (Swagger)
+Acessar no navegador
 ```
 http://127.0.0.1:8000/docs/api
 ```
 
-## Testando a API
+
+## Testando a API (endpoints)
 (Particularmente estou usando Insomnia)
 
 Inicie o servidor:
@@ -84,9 +60,17 @@ URL:
 http://127.0.0.1:8000
 ```
 
-Endpoint: POST /api/register
+Endpoints:
+- POST /api/register
+- POST /api/login 
+- GET /api/me
+- POST /api/logout
 
-Body JSON
+
+### Endpoint: POST /api/register
+
+
+Body JSON (Usuário exemplo)
 ```
 {
   "name": "João",
@@ -95,7 +79,7 @@ Body JSON
 }
 ```
 
-Resposta
+Se informações estiverem OK (200 OK), a resposta será:
 ```
 {
   "message": "Usuário criado com sucesso",
@@ -108,9 +92,7 @@ Resposta
 }
 ```
 
-#### Testando o login
-
-Endpoint: POST /api/login
+### Endpoint: POST /api/login
 
 Body JSON
 ```
@@ -120,11 +102,61 @@ Body JSON
 }
 ```
 
-#### Utilizando token no header
-
-Após o login, enviar token no header:
+  
+Se informações estiverem OK (200 OK), a resposta será:
 ```
-Authorization (ou Auth): Bearer SEU_TOKEN
+{
+	"message": "Login realizado com sucesso",
+	"token": "...",
+	"user": {
+		"id": ...,
+		"name": "Joao",
+		"email": "joao@email.com",
+		"email_verified_at": null,
+		"created_at": "...",
+		"updated_at": "..."
+	}
+}
 ```
 
-Endpoint: GET /api/me
+Se email ou senha estiver incorretas ou se e mail não existir, a resposta será:
+```
+{
+	"message": "Credenciais inválidas.",
+	"errors": {
+		"email": [
+			"Credenciais inválidas."
+		]
+	}
+}
+```
+
+### Endpoint: GET /api/me
+
+Verifica informações do usuário logado
+
+Após o login, enviar token:
+```
+Authorization (ou Auth) >> Bearer Token >> Token: SEU_TOKEN
+```
+
+Se informações estiverem OK (200 OK), a resposta será:
+```
+{
+	"id": ...,
+	"name": "Joao",
+	"email": "joao@email.com",
+	"email_verified_at": null,
+	"created_at": "...",
+	"updated_at": "..."
+}
+```
+
+### Endpoint: POST /api/logout
+
+Se informações estiverem OK (200 OK), a resposta será:
+```
+{
+	"message": "Logout realizado com sucesso"
+}
+```
